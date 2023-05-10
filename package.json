@@ -1,0 +1,22 @@
+{
+  "name": "gerson-api",
+  "version": "1.0.0",
+  "description": "This project is aimed at developing a model-based api's generator, but above all to satisfy all of Gerson's needs of course.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MateoGiraz/gerson-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MateoGiraz/gerson-api/issues"
+  },
+  "homepage": "https://github.com/MateoGiraz/gerson-api#readme",
+  "dependencies": {
+    "typescript": "^5.0.4"
+  }
+}
