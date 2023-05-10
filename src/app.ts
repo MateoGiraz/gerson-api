@@ -1,6 +1,8 @@
-import http from 'http';
-import Router from './router';
-const PORT = 3240;
+import http from "http";
+import html from "../playground";
+import Router from "./router";
+
+const PORT = 324;
 
 class App {
   server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
@@ -8,8 +10,11 @@ class App {
 
   constructor() {
     this.server = http.createServer((req, res) => {
-      res.writeHead(200, { 'Content-Type': 'text/plain' });
-      res.end('geronnnn');
+      res.writeHead(200, {
+        "Content-Length": Buffer.byteLength(html),
+        "Content-Type": "text/html",
+      });
+      res.end(html);
     });
 
     this.router = new Router();
