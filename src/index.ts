@@ -1,6 +1,5 @@
 // import app from './app';
-import Test from './test';
+import App from './app';
 
-const app = new Test();
-
+const app = new App();
 app.run();
