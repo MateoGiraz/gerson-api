@@ -7,7 +7,8 @@ const PORT = 3240;
 class App {
   server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
   router: Router;
-
+  data: object[];
+  body: string;
   constructor() {
     this.server = http.createServer();
     this.router = new Router();
@@ -15,12 +16,18 @@ class App {
       if (!Object.keys(HttpMethod).includes(req.method)){
         res.end('Invalid HTTP Method!');
       }
-      //res.write(`Valid request with the method: ${req.method}\n`);
       if (!this.router.routes[req.method].includes(req.url)){
         res.end('Invalid url!!!');
       }
-      //res.write(`Valid url: ${req.url}`);
+      this.data = [];
       console.log(this.router.routes);
+      req.on('data', (chunk) => {
+        this.data.push(chunk);
+        //console.log(typeof(chunk))
+      }).on('end', () => {
+        this.body = Buffer.concat(this.data[0]).toString();
+        console.log(this.data);
+      })
       this.router.routes[req.method][this.router.routes[req.method].indexOf(req.url) + 1](req, res);
     });
   }
