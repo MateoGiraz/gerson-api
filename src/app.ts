@@ -2,22 +2,18 @@ import http from "http";
 import html from "../playground";
 import Router from "./router";
 import { HttpMethod } from './httpMethod';
+import fs from 'fs';
+import { error } from "console";
 
-const PORT = 324;
+const PORT = 3240;
 
 class App {
   server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
   router: Router;
-  data: object[];
-  body: string;
+  allowedTypes: string[] = ['templates', 'static'];
+  folders: {} = {};
   constructor() {
-    this.server = http.createServer((req, res) => {
-      res.writeHead(200, {
-        "Content-Length": Buffer.byteLength(html),
-        "Content-Type": "text/html",
-      });
-      res.end(html);
-    });
+    this.server = http.createServer();
 
     this.router = new Router();
     this.server.on('request', (req, res) => {
@@ -27,15 +23,7 @@ class App {
       if (!this.router.routes[req.method].includes(req.url)){
         res.end('Invalid url!!!');
       }
-      this.data = [];
       console.log(this.router.routes);
-      req.on('data', (chunk) => {
-        this.data.push(chunk);
-        //console.log(typeof(chunk))
-      }).on('end', () => {
-        this.body = Buffer.concat(this.data[0]).toString();
-        console.log(this.data);
-      })
       this.router.routes[req.method][this.router.routes[req.method].indexOf(req.url) + 1](req, res);
     });
   }
@@ -60,6 +48,24 @@ class App {
 
   delete(path: string, cb: () => void) {
     this.router.delete(path, cb);
+  }
+
+  use(path: string, type: string): void {
+    if(!this.allowedTypes.includes(type)) {
+      throw error('Invalid type');
+    }
+    if (!fs.existsSync(path)) {
+      throw error('Invalid path');
+    }
+    this.folders[type] = path;
+  }
+
+  render(filename: string): any {
+    if (!fs.existsSync(this.folders['templates'] + '/' + filename)) {
+      throw error('No such file');
+    }
+    let myHtml = fs.readFileSync(this.folders['templates'] + '/' + filename);
+    return myHtml;
   }
 }
 
