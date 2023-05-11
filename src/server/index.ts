@@ -6,8 +6,14 @@ const app = new App();
 
 app.use('./playground', 'templates');
 
-app.get('/test/1/sexo/15', (req: any, res: any, params: any) => {
+app.get('/test', (req: any, res: any, params: any) => {
   res.end(app.render('index.html'));
+});
+
+app.get('/test/:id/test/:id2', (req: any, res: any, params: any) => {
+  res.end(
+    `/test/:id/test/:id2 endpoint was called as /test/${params[0]}/test/${params[1]}`,
+  );
 });
 
 // app.get('/greeting', (req: any, res: any) => {

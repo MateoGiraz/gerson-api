@@ -1,9 +1,9 @@
-import http from "http";
-import html from "../../playground";
-import Router from "../router/router";
+import http from 'http';
+import html from '../../playground';
+import Router from '../router/router';
 import { HttpMethod } from '../router/httpMethod';
 import fs from 'fs';
-import { error } from "console";
+import { error } from 'console';
 import Server from './server';
 
 const PORT = 3240;
@@ -11,7 +11,6 @@ const INVALID_TYPE = "Invalid type (try using 'templates' or 'static')";
 const INVALID_DIRECTORY = 'No such directory';
 
 class App {
-
   router: Router;
   server: Server;
 
@@ -44,24 +43,20 @@ class App {
   }
 
   use(path: string, type: string): void {
-    if(!this.allowedTypes.includes(type))
-      throw error(INVALID_TYPE);
+    if (!this.allowedTypes.includes(type)) throw error(INVALID_TYPE);
 
-    if (!this.checkFile(path, true))
-      throw error(INVALID_DIRECTORY);
+    if (!this.checkFile(path, true)) throw error(INVALID_DIRECTORY);
 
     this.folders[type] = path;
   }
 
   render(filename: string): any {
-    if (!this.checkFile(filename, false)) 
-      throw error('No such file');
+    if (!this.checkFile(filename, false)) throw error('No such file');
     return fs.readFileSync(this.folders['templates'] + '/' + filename);
   }
 
   private checkFile(file: string, path: boolean) {
-    if (!path)
-      return fs.existsSync(this.folders['templates'] + '/' + file);
+    if (!path) return fs.existsSync(this.folders['templates'] + '/' + file);
     return fs.existsSync(file);
   }
 }
