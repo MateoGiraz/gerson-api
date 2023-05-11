@@ -24,11 +24,16 @@ class Server {
 
         const path = this.getPath(req, req.url);
 
+        const queryParams = req.url
+          .split('?')[1]
+          .split('&')
+          .map((param) => param.split('='));
+
         if (path == null) {
           res.end(INVALID_URL);
         }
 
-        this.handleRequest(req, res, path);
+        this.handleRequest(req, res, path, queryParams);
       },
     );
   }
@@ -53,6 +58,7 @@ class Server {
       }
 
       const splittedPath = route.split('/').slice(1, route.length);
+
       const splittedUrl = requestdPath.split('/').slice(1, req.url.length);
 
       if (splittedPath.length !== splittedUrl.length) {
@@ -65,6 +71,7 @@ class Server {
         }
       }
       path = splittedPath.join('/');
+      console.log(path);
     });
     return path;
   }
@@ -82,6 +89,7 @@ class Server {
     req: http.IncomingMessage,
     res: http.ServerResponse,
     path: string,
+    queryParams: string[][],
   ) {
     const params = this.splitPath(req.url, (param) => {
       return !isNaN(parseInt(param));
@@ -97,19 +105,20 @@ class Server {
       const data = Buffer.concat(chunks);
       const parseData = new URLSearchParams(data.toString());
 
-      for (var pair of parseData.entries()) this.dataobj[pair[0]] = pair[1];
+      for (var pair of parseData.entries()) {
+        this.dataobj[pair[0]] = pair[1];
+      }
 
       this.router.routes[req.method][this.getCallback(req, path)](
-        req,
+        { queryParams, params, ...req },
         res,
-        params,
       );
     });
   }
 
   private splitPath(url: string, checker: (param: string) => boolean) {
     const params = [];
-    const splittedPath = url.split('/').slice(1, url.length);
+    const splittedPath = url.split('?')[0].split('/').slice(1, url.length);
 
     splittedPath.map((param) => {
       if (checker(param)) {
