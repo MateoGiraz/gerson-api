@@ -6,26 +6,25 @@ const INVALID_METHOD = 'Invalid Http Method';
 const INVALID_URL = 'Invalid URL';
 
 class Server {
-
   server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
   router: Router;
 
   dataobj: {} = {};
 
   constructor(router: Router) {
-
     this.router = router;
     this.server = http.createServer();
-    
-    this.server.on('request', (req: http.IncomingMessage, res: http.ServerResponse) => {
-      if (!this.isValidMethod(req.method))
-        res.end(INVALID_METHOD);
 
-      if (!this.isValidRoute(req.method, req.url))
-        res.end(INVALID_URL);
+    this.server.on(
+      'request',
+      (req: http.IncomingMessage, res: http.ServerResponse) => {
+        if (!this.isValidMethod(req.method)) res.end(INVALID_METHOD);
 
-      this.handleRequest(req, res);
-    })
+        if (!this.isValidRoute(req.method, req.url)) res.end(INVALID_URL);
+
+        this.handleRequest(req, res);
+      }
+    );
   }
 
   public listen(port: number) {
@@ -36,28 +35,41 @@ class Server {
 
   private isValidMethod(method: string) {
     return Object.keys(HttpMethod).includes(method);
-  };
+  }
 
   private isValidRoute(method: string, url: string) {
-    return this.router.routes[method].includes(url)
+    return this.router.routes[method].includes(url);
   }
 
   private handleRequest(req: http.IncomingMessage, res: http.ServerResponse) {
+    const params = [];
+    const URL = req.url;
 
-    let chunks = [];
+    const splittedUrl = URL.split('/').slice(1, URL.length);
+
+    splittedUrl.map((param, index) => {
+      const parsedParam = parseInt(param);
+      if (!isNaN(parsedParam)) {
+        params.push([parsedParam, index]);
+      }
+    });
+
+    const chunks = [];
 
     req.on('data', (chunk) => {
       chunks.push(chunk);
     });
     req.on('end', () => {
-
       const data = Buffer.concat(chunks);
       const parseData = new URLSearchParams(data.toString());
 
-      for (var pair of parseData.entries())
-        this.dataobj[pair[0]] = pair[1];
+      for (var pair of parseData.entries()) this.dataobj[pair[0]] = pair[1];
 
-      this.router.routes[req.method][this.getCallback(req)](req, res, JSON.stringify(this.dataobj));
+      this.router.routes[req.method][this.getCallback(req)](
+        req,
+        res,
+        JSON.stringify(this.dataobj)
+      );
     });
   }
 

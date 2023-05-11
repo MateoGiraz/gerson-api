@@ -6,8 +6,8 @@ const app = new App();
 
 app.use('./playground', 'templates');
 
-app.get('/', (req: any, res: any, params: any) => {
-    res.end(app.render('index.html'));
+app.get('/test/1/sexo/15', (req: any, res: any, params: any) => {
+  res.end(app.render('index.html'));
 });
 
 // app.get('/greeting', (req: any, res: any) => {
