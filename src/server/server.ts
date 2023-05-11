@@ -2,8 +2,9 @@ import http from 'http';
 import Router from '../router/router';
 import { HttpMethod } from '../router/httpMethod';
 
-const INVALID_METHOD = 'Invalid Http Method';
-const INVALID_URL = 'Invalid URL';
+const INVALID_METHOD_MESSAGE = 'Invalid Http Method';
+const INVALID_URL_MESSAGE = 'Invalid URL';
+const NOT_FOUND_ERROR_MESSAGE = 'Bad request';
 
 class Server {
   server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
@@ -19,18 +20,20 @@ class Server {
       'request',
       (req: http.IncomingMessage, res: http.ServerResponse) => {
         if (!this.isValidMethod(req.method)) {
-          res.end(INVALID_METHOD);
+          res.statusCode = 400;
+          res.end(INVALID_METHOD_MESSAGE);
         }
 
         const path = this.getPath(req, req.url);
 
         const queryParams = req.url
-          .split('?')[1]
-          .split('&')
-          .map((param) => param.split('='));
+          ?.split('?')[1]
+          ?.split('&')
+          ?.map((param) => param.split('='));
 
         if (path == null) {
-          res.end(INVALID_URL);
+          res.statusCode = 400;
+          res.end(INVALID_URL_MESSAGE);
         }
 
         this.handleRequest(req, res, path, queryParams);
@@ -52,8 +55,8 @@ class Server {
     let requestdPath = req.url;
     let path = '';
 
-    this.router.routes[req.method].forEach((route) => {
-      if (!(typeof route == 'string')) {
+    this.router.routes[req.method]?.forEach((route) => {
+      if (typeof route !== 'string' || !route) {
         return null;
       }
 
@@ -71,7 +74,6 @@ class Server {
         }
       }
       path = splittedPath.join('/');
-      console.log(path);
     });
     return path;
   }
@@ -85,6 +87,7 @@ class Server {
       splittedPath[i] !== splittedUrl[i] && !splittedPath[i].startsWith(':')
     );
   }
+
   private handleRequest(
     req: http.IncomingMessage,
     res: http.ServerResponse,
@@ -105,14 +108,21 @@ class Server {
       const data = Buffer.concat(chunks);
       const parseData = new URLSearchParams(data.toString());
 
-      for (var pair of parseData.entries()) {
+      for (const pair of parseData.entries()) {
         this.dataobj[pair[0]] = pair[1];
       }
 
-      this.router.routes[req.method][this.getCallback(req, path)](
-        { queryParams, params, ...req },
-        res,
-      );
+      const body = JSON.stringify(this.dataobj);
+
+      try {
+        this.router.routes[req.method][this.getCallback(req, path)](
+          { body, queryParams, params, ...req },
+          res,
+        );
+      } catch (e) {
+        res.statusCode = 404;
+        res.end(NOT_FOUND_ERROR_MESSAGE);
+      }
     });
   }
 
@@ -129,7 +139,7 @@ class Server {
   }
 
   private getCallback(req: http.IncomingMessage, path: string) {
-    return this.router.routes[req.method].indexOf('/' + path) + 1;
+    return this.router.routes[req.method].indexOf(`/${path}`) + 1;
   }
 }
 

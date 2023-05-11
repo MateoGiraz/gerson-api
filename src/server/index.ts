@@ -10,14 +10,12 @@ app.get('/test', (req: any, res: any, params: any) => {
   res.end(app.render('index.html'));
 });
 
-app.get('/test/:id/test/:id2', (req: any, res: any) => {
+app.get('/arqueria/:libras/arco/:pulgadas', (req: any, res: any) => {
   const params = req.params;
   const queryParams = req.queryParams;
 
   res.end(
-    `/test/:id/test/:id2 endpoint was called
-    parameters: ${params[0]} & ${params[1]}
-    queryParameters: ${queryParams[0]} & ${queryParams[1]} `,
+    `el ${queryParams[0]} se compro un arco de ${params[0]} libras y ${params[1]} pulgadas`,
   );
 });
 
