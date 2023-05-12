@@ -1,14 +1,10 @@
-import http from 'http';
-import html from '../../playground';
 import Router from '../router/router';
-import { HttpMethod } from '../router/httpMethod';
 import fs from 'fs';
 import { error } from 'console';
 import Server from './server';
+import Errors from '../utils/errors';
 
 const PORT = 3240;
-const INVALID_TYPE = "Invalid type (try using 'templates' or 'static')";
-const INVALID_DIRECTORY = 'No such directory';
 
 class App {
   router: Router;
@@ -43,9 +39,9 @@ class App {
   }
 
   use(path: string, type: string): void {
-    if (!this.allowedTypes.includes(type)) throw error(INVALID_TYPE);
+    if (!this.allowedTypes.includes(type)) throw error(Errors.INVALID_TYPE);
 
-    if (!this.checkFile(path, true)) throw error(INVALID_DIRECTORY);
+    if (!this.checkFile(path, true)) throw error(Errors.INVALID_DIRECTORY);
 
     this.folders[type] = path;
   }

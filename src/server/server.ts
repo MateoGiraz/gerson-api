@@ -1,10 +1,7 @@
 import http from 'http';
 import Router from '../router/router';
 import { HttpMethod } from '../router/httpMethod';
-
-const INVALID_METHOD_MESSAGE = 'Invalid Http Method';
-const INVALID_URL_MESSAGE = 'Invalid URL';
-const NOT_FOUND_ERROR_MESSAGE = 'Bad request';
+import Errors from '../utils/errors';
 
 class Server {
   server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
@@ -21,7 +18,7 @@ class Server {
       (req: http.IncomingMessage, res: http.ServerResponse) => {
         if (!this.isValidMethod(req.method)) {
           res.statusCode = 400;
-          res.end(INVALID_METHOD_MESSAGE);
+          res.end(Errors.INVALID_METHOD_MESSAGE);
         }
 
         const path = this.getPath(req, req.url);
@@ -33,7 +30,7 @@ class Server {
 
         if (path == null) {
           res.statusCode = 400;
-          res.end(INVALID_URL_MESSAGE);
+          res.end(Errors.INVALID_URL_MESSAGE);
         }
 
         this.handleRequest(req, res, path, queryParams);
@@ -121,7 +118,7 @@ class Server {
         );
       } catch (e) {
         res.statusCode = 404;
-        res.end(NOT_FOUND_ERROR_MESSAGE);
+        res.end(Errors.NOT_FOUND_ERROR_MESSAGE);
       }
     });
   }
