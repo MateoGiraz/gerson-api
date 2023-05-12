@@ -26,10 +26,12 @@ class Server {
 
         const path = this.getPath(req, req.url);
 
-        const queryParams = req.url
-          ?.split('?')[1]
-          ?.split('&')
-          ?.map((param) => param.split('='));
+        const queryParams = req.url.includes('?')
+          ? req.url
+              ?.split('?')[1]
+              ?.split('&')
+              ?.map((param) => param.split('='))
+          : null;
 
         if (path == null) {
           res.statusCode = 400;
@@ -108,11 +110,16 @@ class Server {
       const data = Buffer.concat(chunks);
       const parseData = new URLSearchParams(data.toString());
 
+      this.dataobj = {};
+
       for (const pair of parseData.entries()) {
         this.dataobj[pair[0]] = pair[1];
       }
 
-      const body = JSON.stringify(this.dataobj);
+      const body =
+        Object.keys(this.dataobj).length > 0
+          ? JSON.parse(Object.keys(this.dataobj)[0])
+          : {};
 
       try {
         this.router.routes[req.method][this.getCallback(req, path)](

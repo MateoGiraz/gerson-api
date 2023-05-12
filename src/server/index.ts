@@ -14,6 +14,8 @@ app.get('/arqueria/:libras/arco/:pulgadas', (req: any, res: any) => {
   const params = req.params;
   const queryParams = req.queryParams;
 
+  console.log(req.body);
+
   res.end(
     `el ${queryParams[0]} se compro un arco de ${params[0]} libras y ${params[1]} pulgadas`,
   );
