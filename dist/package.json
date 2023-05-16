@@ -1,0 +1,33 @@
+{
+  "name": "gerson-api-gztest",
+  "version": "0.0.5",
+  "description": "",
+  "main": "lib/es5/index.js",
+  "module": "lib/es6/index.js",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/monsterlessonsacademy/utils.git"
+  },
+  "files": [
+    "lib",
+    "CHANGELOG.md",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
+  "keywords": [
+    "javascript",
+    "api",
+    "server"
+  ],
+  "author": "Greson Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MateoGiraz/gerson-api/issues"
+  },
+  "homepage": "https://github.com/MateoGiraz/gerson-api/blob/main/README.md",
+  "dependencies": {
+    "@types/node": "^20.1.6"
+  }
+}
