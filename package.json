@@ -1,8 +1,11 @@
 {
   "name": "gerson-api",
   "version": "1.0.0",
-  "repository": "git@monsterlessonsacademy.github.com:monsterlessonsacademy/monsterlessonsacademy.git",
-  "author": "Oleksandr Kocherhin <monsterlessonsacademy@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MateoGiraz/gerson-api.git"
+  },
+  "author": "Gerson Team",
   "license": "MIT",
   "scripts": {
     "compile": "rm -rf dist/lib && tsc && tsc --build tsconfig.es5.json"
