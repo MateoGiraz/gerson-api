@@ -13,10 +13,7 @@ app.get('/test/:id/test/:id2', (req, res) => {
   const queryParams = req.queryParams;
 
   res.end(
-    `/test/:id/test/:id2 endpoint was called as /test/${params[0]}/test/${params[1]}`,
-    `/test/:id/test/:id2 endpoint was called
-    parameters: ${params[0]} & ${params[1]}
-    queryParameters: ${queryParams[0]} & ${queryParams[1]} `,
+    'Hello World ' + params[0] + params[1] + queryParams[0] + queryParams[1],
   );
 });
 
