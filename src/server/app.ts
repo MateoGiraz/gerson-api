@@ -1,14 +1,16 @@
-import {Router} from '../router/router';
+import { Router } from '../router/router';
 import * as fs from 'fs';
 import { error } from 'console';
 import Server from './server';
 import Errors from '../utils/errors';
+import { Table, Database } from 'gerson-orm';
 
 const PORT = 3240;
 
 class App {
   router: Router;
   server: Server;
+  database: Database;
 
   allowedTypes: string[] = ['templates', 'static'];
   folders: {} = {};
@@ -26,7 +28,7 @@ class App {
     this.router.get(path, cb);
   }
 
-  post(path: string, cb: () => void) {
+  post(path: string, cb: (req: any, res: any, params: any) => void) {
     this.router.post(path, cb);
   }
 
@@ -36,6 +38,30 @@ class App {
 
   delete(path: string, cb: () => void) {
     this.router.delete(path, cb);
+  }
+
+  initializeDatabase(connectionString: string) {
+    this.database = new Database(connectionString);
+  }
+
+  initializeEndpoints(tableName: string, tableModel: string[]) {
+    const table = new Table(tableName, tableModel, this.database);
+
+    this.get('/' + tableName + '/:id', (req, res) => {
+      const id = req.params[0];
+
+      table.get([['id', id]], tableModel).then((tableName) => {
+        const jsonResponse = JSON.stringify(tableName[0]);
+        res.end(jsonResponse);
+      });
+    });
+
+    this.get('/' + tableName, (req, res) => {
+      table.getAll(tableModel).then((tableName) => {
+        const jsonResponse = JSON.stringify(tableName);
+        res.end(jsonResponse);
+      });
+    });
   }
 
   use(path: string, type: string): void {

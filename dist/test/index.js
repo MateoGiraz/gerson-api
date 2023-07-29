@@ -8,13 +8,7 @@ app.get('/test', (req, res) => {
   res.end(app.render('index.html'));
 });
 
-app.get('/test/:id/test/:id2', (req, res) => {
-  const params = req.params;
-  const queryParams = req.queryParams;
-
-  res.end(
-    'Hello World ' + params[0] + params[1] + queryParams[0] + queryParams[1],
-  );
-});
+app.initializeDatabase('postgresql://postgres:secret@localhost:5432/testDB');
+app.initializeEndpoints('users', ['name', 'email']);
 
 app.run();
