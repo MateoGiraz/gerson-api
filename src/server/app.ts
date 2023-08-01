@@ -62,6 +62,17 @@ class App {
         res.end(jsonResponse);
       });
     });
+
+    this.post('/' + tableName, (req, res) => {
+      const body = req.body;
+      // Parse the JSON string
+      console.log(body);
+      res.end('ok');
+      /*table.push(body).then((tableName) => {
+        const jsonResponse = JSON.stringify(tableName);
+        res.end(jsonResponse);
+      });*/
+    });
   }
 
   use(path: string, type: string): void {

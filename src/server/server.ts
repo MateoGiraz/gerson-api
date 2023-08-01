@@ -1,7 +1,8 @@
-import * as http from 'http'
-import {Router} from '../router/router';
+import * as http from 'http';
+import { Router } from '../router/router';
 import { HttpMethod } from '../router/httpMethod';
 import Errors from '../utils/errors';
+import { json } from 'stream/consumers';
 
 class Server {
   server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
@@ -103,13 +104,12 @@ class Server {
 
     req.on('end', () => {
       const data = Buffer.concat(chunks);
-      const parseData = new URLSearchParams(data.toString());
+      const parseData = new URLSearchParams(JSON.parse(data.toString()));
 
       for (const pair of parseData.entries()) {
         this.dataobj[pair[0]] = pair[1];
       }
-
-      const body = JSON.stringify(this.dataobj);
+      const body = this.dataobj;
 
       try {
         this.router.routes[req.method][this.getCallback(req, path)](
