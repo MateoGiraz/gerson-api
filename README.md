@@ -27,6 +27,19 @@ app.get('/', (req, res) => {
 app.run();
 ```
 
+You might also Gerson to create Endpoints for you. This methods use [gerson-db](https://github.com/MateoGiraz/gerson-db).
+Initialize your database (postgres & mysql are supported), and then define the name of your table, and its attributes.
+Gerson will create GET & POST methods for each attribute of your model.
+
+```js
+import { App } from 'gerson-api';
+
+const app = new App();
+
+app.initializeDatabase('postgresql://postgres:secret@localhost:5432/testDB');
+app.initializeEndpoints('users', ['name', 'email']);
+```
+
 ### Features:
 - Simple and fast routing
 - Query, URL and Body parameters
